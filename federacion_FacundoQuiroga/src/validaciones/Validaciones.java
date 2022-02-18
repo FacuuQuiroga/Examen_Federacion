@@ -1,13 +1,17 @@
 package validaciones;
 
+import java.time.LocalDate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.aeat.valida.Validador;
 
+import entidades.NIE;
 import entidades.NIF;
 
+//Examen 5 Ejercicio 3
 public class Validaciones {
+
 	/**
 	 * Valida que una cadena de caracteres contiene dígitos únicamente
 	 * 
@@ -34,6 +38,45 @@ public class Validaciones {
 		Pattern patron = Pattern.compile("[ A-Za-zñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ-]{3,50}");
 		Matcher comprobacion = patron.matcher(nombre);
 		return comprobacion.matches();//
+	}
+
+	/**
+	 * 
+	 * Funcion que valida si una cadena de caracteres que se pasa como parámetro
+	 * tiene un NIF válido.
+	 * 
+	 * @param nif cadena con el NIF a validar
+	 * @return true si la cadena nif es un NIF válido o false en caso contrario
+	 */
+	public static boolean validarNIF(String nif) {
+		boolean ret = false;
+		if (nif.length() != 9)
+			ret = false;
+		if (!Character.isLetter(nif.charAt(nif.length() - 1)))
+			ret = false;
+		// Usamos validador de AEAT --> valnif.jar
+		Validador val = new Validador();
+		ret = (val.checkNif(nif) > 0 ? true : false);
+		return ret;
+	}
+
+	/**
+	 * Función que valida un objeto NIF
+	 * 
+	 * @param nif objeto NIF que se va a validar
+	 * @return true si el NIF pasado como parámetro es válido o false en caso
+	 *         contrario
+	 */
+	public static boolean validarNIF(NIF nif) {
+		boolean ret = false;
+		if (nif.getNumero().length() != 8)
+			ret = false;
+		if (!Character.isLetter(nif.getLetraFinal()))
+			ret = false;
+		// Usamos validador de AEAT --> valnif.jar
+		Validador val = new Validador();
+		ret = (val.checkNif(nif.mostrar()) > 0 ? true : false);
+		return ret;
 	}
 
 	/**
@@ -81,4 +124,49 @@ public class Validaciones {
 		return esValido;
 	}
 
+	/**
+	 * Función que valida un objeto NIE
+	 * 
+	 * @param nie objeto NIE que se va a validar
+	 * @return true si el NIE pasado como parámetro es válido o false en caso
+	 *         contrario
+	 */
+	public static boolean validarNIE(NIE nie) {
+		return validarNIE(nie.mostrar());
+	}
+
+	public static boolean validarAltura(float altura) {
+		return (altura > 0.0F);
+	}
+
+	public static boolean validarPeso(float peso) {
+		return (peso > 0.0F);
+	}
+
+	public static boolean validarDireccion(String direccion) {
+		return (direccion.length() > 3);
+	}
+
+	/**
+	 * Función que valida un valor flotante para la pureza (en %)
+	 * 
+	 * @param pureza valor flotante de la pureza para validar
+	 * @return true si es valor válido (entre 0,0 y 100,0) o false en caso contrario
+	 */
+	public static boolean validarPureza(float pureza) {
+		return (pureza >= 0.0F && pureza <= 100.0F);
+	}
+
+	public static boolean validarFecha(LocalDate fechaMin) {
+		// TODO Esbozo de método generado automáticamente
+		return true;
+	}
+
+	public static boolean validarId(long id) {
+		return (id > 0);
+	}
+
+	public static boolean validarAnio(int anio) {
+		return (anio > 0);
+	}
 }

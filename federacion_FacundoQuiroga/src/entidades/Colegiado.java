@@ -3,6 +3,7 @@ package entidades;
 import java.util.Scanner;
 
 import utils.Datos;
+import validaciones.Validaciones;
 
 public class Colegiado {
 	private long id;
@@ -56,10 +57,11 @@ public class Colegiado {
 			System.out.println("Introduzca el id del nuevo colegiado:");
 			in = new Scanner(System.in);
 			id = in.nextInt();
-			if (id > 0)
-				valido = true;
+			valido = Validaciones.validarId(id);
+			if (!valido)
+				System.out.println("ERROR: Valor incorrecto para el identificador.");
 			else
-				System.out.println("Valor incorrecto para el identificador.");
+				valido = true;
 		} while (!valido);
 
 		valido = false;
@@ -82,15 +84,15 @@ public class Colegiado {
 		return ret;
 	}
 
+	//Examen 5 Ejercicio 2
 	/**
-	 * metodo toString sobrescrito para que devuelva:
-	 *  idColegiado”. ”nombre” (”documentacion”) nacido el fechaNac.año “,tfno: “telefono” CAT= "categoria"
-	 *  @author Facu
+	 * Función que devuelve una cadena de caracteres con el formato siguiente:
+	 * <idColegiado>”. ”<nombre>” (”<documentacion>”) nacido el <fechaNac.año>
+	 * “,tfno: “<telefono>” CAT= ”<categoria>
 	 */
 	@Override
 	public String toString() {
-		return "id=" + this.id + "." + persona.getNombre() + "(" + persona.getNifnie() + ")" + " nacido el "
-				+ persona.getFechaNac() + ", tfno: " + persona.getTelefono() + " CAT=" + categoria;
+		return "" + id + ". " + persona.getNombre() + " ("+ persona.getNifnie().mostrar() +") nacido el "+ persona.getFechaNac().getYear() +", tfno: "+persona.getTelefono()+" CAT="+categoria.getNombre();
 	}
 
 }

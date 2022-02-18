@@ -1,8 +1,9 @@
 package entidades;
 
 import java.util.Scanner;
-import com.aeat.valida.*;
+import validaciones.Validaciones;
 
+//Examen 2 Ejercicio 3.1
 public class NIF extends Documentacion {
 	String numero;
 	char letraFinal;
@@ -52,50 +53,16 @@ public class NIF extends Documentacion {
 			System.out.println("Introduzca el NIF completo:");
 			in = new Scanner(System.in);
 			cadena = in.nextLine();
-			if (valido)
-				valido = validarNIF(cadena);
+			valido = Validaciones.validarNIF(cadena);
 		} while (!valido);
 
 		ret = new NIF(cadena);
 		return ret;
 	}
 
-	/**
-	 * 
-	 * Funcion que valida si una cadena de caracteres que se pasa como parámetro
-	 * tiene un NIF válido.
-	 * 
-	 * @param nif cadena con el NIF a validar
-	 * @return true si la cadena nif es un NIF válido o false en caso contrario
-	 */
-	private static boolean validarNIF(String nif) {
-		boolean ret = false;
-		if (nif.length() != 9)
-			ret = false;
-		if (!Character.isLetter(nif.charAt(nif.length() - 1)))
-			ret = false;
-		// Usamos validador de AEAT --> valnif.jar
-		Validador val = new Validador();
-		ret = (val.checkNif(nif) > 0 ? true : false);
-		return ret;
-	}
-
-	private static boolean validarNIF(NIF nif) {
-		boolean ret = false;
-		if (nif.getNumero().length() != 8)
-			ret = false;
-		if (!Character.isLetter(nif.getLetraFinal()))
-			ret = false;
-		// Usamos validador de AEAT --> valnif.jar
-		Validador val = new Validador();
-		ret = (val.checkNif(nif.mostrar()) > 0 ? true : false);
-		return ret;
-	}
-
 	@Override
 	public boolean validar() {
-		return NIF.validarNIF(this);
-
+		return Validaciones.validarNIF(this);
 	}
 
 }

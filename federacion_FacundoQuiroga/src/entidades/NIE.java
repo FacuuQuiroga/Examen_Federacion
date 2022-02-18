@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 import validaciones.Validaciones;
 
+//Examen 2 Ejercicio 3.1
 public class NIE extends Documentacion {
 	char letraInicial;
 	String numero;
@@ -76,8 +77,5 @@ public class NIE extends Documentacion {
 	public boolean validar() {
 		return Validaciones.validarNIE(this.mostrar());
 	}
-	
-	public static boolean validarNIE(NIE nie) {
-		return Validaciones.validarNIE(nie.mostrar());
-	}
+
 }

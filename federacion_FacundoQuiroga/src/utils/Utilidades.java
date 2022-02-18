@@ -8,11 +8,13 @@ import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+import validaciones.Validaciones;
+
 /**
  *
  * @author luis
  */
-public class Utilidades {
+public class Utilidades extends Validaciones {
 
 	/**
 	 * Función que pide al usuario que introduzca 's' o 'S' para Sí o 'n' o 'N' para
@@ -30,12 +32,13 @@ public class Utilidades {
 		do {
 			System.out.println("Pulse s para Sí o n para No");
 			in = new Scanner(System.in, "ISO-8859-1");
+			in.reset();
 			resp = in.nextLine().charAt(0);
 			if (resp != 's' && resp != 'S' && resp != 'n' && resp != 'N') {
 				System.out.println("Valor introducido incorrecto.");
 			}
 		} while (resp != 's' && resp != 'S' && resp != 'n' && resp != 'N');
-		if (resp == 's' || resp != 'S') {
+		if (resp == 's' || resp == 'S') {
 			ret = true;
 		} else {
 			ret = false;
@@ -103,6 +106,7 @@ public class Utilidades {
 		return ret;
 	}
 
+	//Examen 3 Ejercicio 1
 	/**
 	 * Función que pide al usuario que introduce un valor para una fecha a partir de
 	 * 3 enteros para el día, mes y año respectivamente Y una hora a partir de ptrps
@@ -150,6 +154,7 @@ public class Utilidades {
 		return ret;
 	}
 
+	//Examen 4 Ejercicio 1
 	/**
 	 * Función que quita los espacios en blanco del comienzo y del final de una
 	 * cadena de caracteres que se pasa como parámetro y, además, sustituye todas
@@ -171,44 +176,43 @@ public class Utilidades {
 		return Normalizer.normalize(string, Form.NFC).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
 	}
 
+	//Examen 5 Ejercicio 1
 	/**
-	 * Lee un flotante y verifica que lo sea, pidiendo uno hasta que no de ninguna
-	 * exepcion
-	 * 
-	 * @param flotante que el usuario desea introducir
-	 * @return un Flot
-	 * @throws InputMismatchException if the next token does not match the
-	 *                                <i>Float</i> regular expression, or is out of
-	 *                                range
-	 * @throws NoSuchElementException if input is exhausted
-	 * @throws IllegalStateException  if this scanner is closed
-	 * @author Facu examen 5
+	 * Función que pide al usuario que introduzca un valor decimal por la entrada
+	 * estándar. Si el formato introducido no es correcto o fuera de rango, o si se
+	 * produce cualquier otra excepción, avisa al usuario y le vuelve a pedir que lo
+	 * introduzca de nuevo un valor.
+	 *
+	 * @return el valor float introducido por el usuario
 	 */
 	public static float leerFloat() {
-		float ret = 0.0F;
-		boolean valido = false;
+		double ret = 0.0;
+		boolean correcto = false;
 		Scanner in;
 		do {
-			System.out.println("Introduzca un valor flotante (xx.xx)");
-			in = new Scanner(System.in);
+			System.out.println("Introduzca un valor decimal en formato xx,xx ");
+			in = new Scanner(System.in, "ISO-8859-1");
 			try {
-				ret = in.nextFloat();
-				valido = true;
-			} catch (InputMismatchException ime) {
-				System.out.println("Formato introducido incorrecto.");
-				valido = false;
-			} catch (NoSuchElementException nse) {
-				System.out.println("Formato introducido incorrecto.");
-				valido = false;
-			} catch (IllegalStateException ise) {
-				System.out.println("Formato introducido incorrecto");
-				valido = false;
+				ret = in.nextDouble();
+				correcto = true;
+			} catch (InputMismatchException e1) {
+				System.out.println("Formato introducido incorrecto o valor fuera de rango." + e1.getMessage());
+				e1.printStackTrace();
+				correcto = false;
+			} catch (NoSuchElementException e2) {
+				System.out.println("ERROR: the input is exhausted: " + e2.getMessage());
+				e2.printStackTrace();
+				correcto = false;
+			} catch (IllegalStateException e3) {
+				System.out.println("ERROR: this scanner is closed:" + e3.getMessage());
+				e3.printStackTrace();
+				correcto = false;
 			} catch (Exception e) {
-				System.out.println("Formato introducido incorrecto");
-				valido = false;
+				System.out.println("ERROR: Se ha producido una excepción: " + e.getMessage());
+				e.printStackTrace();
+				correcto = false;
 			}
-		} while (!valido);
-		return ret;
-
+		} while (!correcto);
+		return Float.parseFloat("" + ret);
 	}
 }

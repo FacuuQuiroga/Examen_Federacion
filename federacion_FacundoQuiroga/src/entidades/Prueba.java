@@ -5,8 +5,10 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 import utils.Utilidades;
+import validaciones.Validaciones;
 
 public class Prueba {
+	private static final Object[] Participante = null;
 	private long id;
 	private String nombre;
 	private LocalDate fecha; // solo fecha
@@ -202,12 +204,33 @@ public class Prueba {
 
 	@Override
 	public String toString() {
-		return "Prueba [id=" + id + ", nombre=" + nombre + ", fecha=" + fecha + ", individual=" + individual
-				+ ", lugar=" + lugar + ", arbitraje=" + Arrays.toString(arbitraje) + ", resultado=" + resultado
-				+ ", participantes=" + Arrays.toString(participantes) + "]";
+//		return "Prueba [id=" + id + ", nombre=" + nombre + ", fecha=" + fecha + ", individual=" + individual
+//				+ ", lugar=" + lugar + ", arbitraje=" + Arrays.toString(arbitraje) + ", resultado=" + resultado
+//				+ ", participantes=" + Arrays.toString(participantes) + "]";
+		String a, b, podio = null;
+		a = " " + getId() + ". " + getNombre() + "(" + getFecha() + ") en" + getLugar() + " de tipo "
+				+ (this.individual ? "grupal" : "individual");
+
+		if (this.cerrada() != false) {
+			Resultado r = this.getResultado();
+			Participante[] p = r.getPodio();
+			
+			
+			
+			
+
+			String pp = "Primer puesto: " + p[0].getId() + "con el dorsal" + p[0].getDorsal() + "por la calle" + p[0].getCalle()
+					 + "ORO#" + getResultado().getPrimero().getId()+"\n";
+			String sp = "Segundo puesto: " + p.id + "con el dorsal" + p.dorsal + "por la calle" + p.calle
+					+ this.getParticipantes() + "ORO#" + this.getResultado().getPrimero().getId()+"\n";
+			String tp = "Tercer puesto: " + p.id + "con el dorsal" + p.dorsal + "por la calle" + p.calle
+					+ this.getParticipantes() + "ORO#" + this.getResultado().getPrimero().getId()+"\n";
+			podio = pp + sp + tp;
+		}
+		return a + podio;
 	}
 
-	// Ejercicio 2, parte B
+	// Examen 1 Ejercicio 2, parte B
 	public static Prueba nuevaPrueba() {
 		Prueba ret = null;
 		Scanner in;
@@ -219,7 +242,10 @@ public class Prueba {
 			System.out.println("Introduzca el id de la nueva prueba:");
 			in = new Scanner(System.in);
 			id = in.nextInt();
-			if (id > 0)
+			valido = Validaciones.validarId(id);
+			if (!valido)
+				System.out.println("ERROR: Valor introducido para el identificador de la prueba inválido.");
+			else
 				valido = true;
 		} while (!valido);
 		valido = false;
@@ -227,7 +253,10 @@ public class Prueba {
 			System.out.println("Introduzca el nombre de la nueva prueba:");
 			in = new Scanner(System.in);
 			nombre = in.nextLine();
-			if (nombre.length() > 3)
+			valido = Validaciones.validarNombre(nombre);
+			if (!valido)
+				System.out.println("ERROR: Valor introducido para el nombre de la prueba inválido.");
+			else
 				valido = true;
 		} while (!valido);
 
