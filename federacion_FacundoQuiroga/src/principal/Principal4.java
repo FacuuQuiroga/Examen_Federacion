@@ -3,9 +3,12 @@ package principal;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import entidades.*;
@@ -482,10 +485,115 @@ public class Principal4 {
 			break;
 		case 2: // opción 3.2
 			System.out.println("Ha seleccionado 3.2 INSCRIPCIÓN de ATLETA en PRUEBA..");
+			inscripcionAtleta();
 			break;
 		default:
 		}
 		System.out.println("Volviendo al menú de ATLETAS...\n\n");
+	}
+
+	/**
+	 * ejercicio 1 examen 7
+	 * 
+	 * @author Facundo
+	 */
+	private static void inscripcionAtleta() {
+		Scanner in = new Scanner(System.in);
+		Atleta a = null;
+		boolean correcto = false;
+		do {
+			a = Atleta.nuevoAtleta();
+			System.out.println("Son correctos los datos introducidos?");
+			System.out.println("\t" + a.getPersona().toString() + "\n" + a.toString());
+			correcto = Utilidades.leerBoolean();
+		} while (!correcto);
+
+		System.out.println("A que prueba individual desea inscribirse?");
+		File f = null;
+		FileReader fr = null;
+		BufferedReader br = null;
+		try {
+			br = new BufferedReader(fr = new FileReader(f = new File("pruebas.txt")));
+			String linea;
+
+			while ((linea = br.readLine()) != null) {
+				String[] prueba = linea.split("|");
+				Long idPrueba = Long.valueOf(prueba[0]);
+				String nombre = prueba[1];
+				LocalDate fecha = LocalDate.parse(prueba[2]);
+				Lugar lugar = Lugar.valueOf(prueba[3]);
+				boolean individual = Boolean.valueOf(prueba[4]);
+
+				Prueba p = new Prueba(idPrueba, nombre, fecha, lugar, individual);
+
+				if (p.isIndividual()) {
+					System.out.println(p.getId() + "|" + p.getNombre() + "|" + p.getFecha() + "|" + p.getLugar() + "|"
+							+ p.isIndividual());
+				}
+
+				long idInscripcion;
+				boolean valido = false;
+				do {
+					System.out.println("Escribe el ID de la prueba a la que quieres inscribirte");
+					idInscripcion = in.nextLong();
+					boolean idVal = Utilidades.validarId(idInscripcion);
+					if (!valido)
+						System.out.println("id invalido");
+					else
+						valido = true;
+				} while (!valido);
+				System.out.println("inscripcion Realizada!");
+				// Creamos el fichero de inscripcion
+				String nombreFichero = ("inscrip_" + idInscripcion + "_" + a.getPersona().getNifnie() + ".dat");
+
+				String ficheroTexto = ("Se ha creado el fichero" + nombreFichero + "a" + LocalDate.now()
+						+ " en el que el atleta" + a.getId() + "de nombre" + a.getPersona().getNombre() + "y NIF/NIE"
+						+ a.getPersona().getNifnie() + "queda inscripto en la prueba" + idInscripcion + "de nombre"
+						+ p.getNombre() + "a celebrar en " + p.getLugar().toString() + "el dia" + p.getFecha());
+
+				File f2 = null;
+				FileOutputStream fos = null;
+				ObjectOutputStream oos = null;
+
+				try {
+					f2 = new File(nombreFichero);
+					fos = new FileOutputStream(f);
+					oos = new ObjectOutputStream(fos);
+					oos.writeObject(ficheroTexto);
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} finally {
+					try {
+						if (oos != null)
+							oos.close();
+						if (fos != null)
+							fos.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+
+			}
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (br != null)
+					br.close();
+				if (fr != null)
+					fr.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 	private static void mostrarSubmenuColegiado(int elecc) {
@@ -574,47 +682,80 @@ public class Principal4 {
 		System.out.println("" + "0. Volver");
 	}
 
+	/// Examen 6 Ejercicio 1
+	/**
+	 * Función para el login de un usuario mediante sus credenciales de acceso
+	 * 
+	 * @param cred credenciales de acceso (2 cadenas de caracteres para usuario y
+	 *             passsword)
+	 * @return true si las credenciales coinciden con alguna de las contenidas en el
+	 *         fichero de caracteres credenciales.txt o false en caso contrario
+	 */
 	private static boolean login(Credenciales cred) {
-
-		File f = new File("credenciales.txt");
-		FileReader fr = null;
-		BufferedReader br = null;
-		try {   
-			fr = new FileReader(f);
-			br = new BufferedReader(fr);
-
-			while (true) {
-				String c = br.readLine();
-				String[] cred1 = c.split("|");
-				String usuario = cred1[0];
-				String contraseña = cred1[1];
-//			    String rol = cred1[2];
-
-				if (usuario == cred.getUsuario()) {
-					if (contraseña == cred.getPassword())
-						return true;
-				} else {
-					return false;
-				}
-
-			}
-
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-			return false;
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
+		boolean ret = false;
+		File fichero = new File("credenciales.txt");
+		FileReader lector = null;
+		BufferedReader buffer = null;
+		try {
 			try {
-				if (br != null)
-					br.close();
-				if (fr != null)
-					fr.close();
-			} catch (IOException e) {
-				e.printStackTrace();
+				lector = new FileReader(fichero);
+				buffer = new BufferedReader(lector);
+				String linea;
+				while ((linea = buffer.readLine()) != null) {
+					String[] campos = linea.split("\\|");
+					String user = campos[0];
+					String pass = campos[1];
+					String rol = campos[2];
+					if (user.equals(cred.getUsuario()))
+						if (pass.equals(cred.getPassword()))
+							return true;
+				}
+			} finally {
+				if (buffer != null) {
+					buffer.close();
+				}
+				if (lector != null) {
+					lector.close();
+				}
 			}
+		} catch (FileNotFoundException e) {
+			System.out.println("Se ha producido una FileNotFoundException" + e.getMessage());
+		} catch (IOException e) {
+			System.out.println("Se ha producido una IOException" + e.getMessage());
+		} catch (Exception e) {
+			System.out.println("Se ha producido una Exception" + e.getMessage());
 		}
-		return false;
+		return ret;
+	}
+
+	/// Examen 6 Ejercicio 2
+	/***
+	 * (Máx 2ptos.) Implementar una función para recorrer todos los elementos del
+	 * array ATLETAS de la clase Datos.java, y exportar a un fichero binario de
+	 * nombre juniors.dat sólo aquellos atletas considerados como Junior (es decir,
+	 * cuya fechaNac posterior al 01/01/2000).
+	 */
+	public static void exportarAtletasJunior() {
+		String path = "juniors.dat";
+		try {
+			FileOutputStream fichero = new FileOutputStream(path, false); // el 2º argumento a true para que concatene
+																			// al final del fichero, en lugar de
+																			// sobreescribir
+			ObjectOutputStream escritor = new ObjectOutputStream(fichero);
+			for (Atleta a : Datos.ATLETAS) {
+				if (a.getPersona().getFechaNac().isAfter(LocalDate.of(2000, 1, 1))) {
+					escritor.writeObject((Atleta) a);
+					escritor.flush();
+				}
+			}
+			escritor.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("Se ha producido una FileNotFoundException" + e.getMessage());
+		} catch (IOException e) {
+			System.out.println("Se ha producido una IOException" + e.getMessage());
+		} catch (Exception e) {
+			System.out.println("Se ha producido una Exception" + e.getMessage());
+		}
 	}
 
 }

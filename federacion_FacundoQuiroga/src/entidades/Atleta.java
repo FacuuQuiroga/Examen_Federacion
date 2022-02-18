@@ -1,25 +1,12 @@
 package entidades;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.Scanner;
 
 import utils.Datos;
 import utils.Utilidades;
 import validaciones.Validaciones;
-import java.util.Date;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
-public class Atleta extends Participante implements Serializable {
-
-	private static final long serialVersionUID = 1L;
+public class Atleta extends Participante {
 	private long idAtleta;
 	private float altura;
 	private float peso;
@@ -56,10 +43,6 @@ public class Atleta extends Participante implements Serializable {
 		this.altura = a.altura;
 		this.peso = a.peso;
 		this.persona = Datos.buscarPersonaPorId(a.idAtleta);
-	}
-
-	public Atleta() {
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -142,55 +125,6 @@ public class Atleta extends Participante implements Serializable {
 
 		ret = new Atleta(id, altura, peso, dp);
 		return ret;
-	}
-
-	/**
-	 * Metodo el cual exporta un objeto del tipo Atleta cuando la fecha de
-	 * nacimiento es a partir del 01/01/2000, guardandolo en un archivo llamado
-	 * "junior.dat"
-	 * 
-	 * @author Facundo
-	 */
-	public void exportarBinario() {
-		File f = null;
-		FileOutputStream fos = null;
-		ObjectOutputStream oos = null;
-
-		try {
-
-			f = new File("junior.dat"); // creo el archivo
-			fos = new FileOutputStream(f); // se lo paso a fos para escribir
-			oos = new ObjectOutputStream(fos);// se lo paso a oos para que pueda escribir
-
-			SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-			LocalDate fecha = LocalDate.of(2000, 01, 01);
-			Atleta a = null;
-
-			for (int i = 0; i < Datos.ATLETAS.length; i++) {
-				a = Datos.ATLETAS[i];
-				LocalDate c = a.getPersona().getFechaNac();
-				if (c.isBefore(fecha)) {
-					a = new Atleta();
-					a = Datos.ATLETAS[i];
-					oos.writeObject(a);
-				}
-			}
-
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (oos != null)
-					oos.close();
-				if (fos != null)
-					fos.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
 	}
 
 	/***

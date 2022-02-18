@@ -1,14 +1,23 @@
 package entidades;
 
-import java.io.BufferedWriter;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.lang.reflect.Array;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Scanner;
 import utils.Datos;
 import validaciones.Validaciones;
 
-public class Manager {
+public class Manager implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private long id;
 	private String telefono;
 	private String direccion;
@@ -29,10 +38,6 @@ public class Manager {
 		this.telefono = telefono;
 		this.direccion = direccion;
 		this.persona = dp;
-	}
-
-	public Manager() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public long getId() {
@@ -116,56 +121,6 @@ public class Manager {
 		return ret;
 	}
 
-	/**
-	 * @return Orden:
-	 *         DatosPersona.id|DatosPersona.nombre|DatosPersona.documentacion|DatosPersona.fechaNac|
-	 *         DatosPersona.telefono|Manager.id|Manager.telefono|Manager.direccion
-	 * @author Facundo
-	 */
-	public String data() {
-		String ret = "";
-		ret = this.persona.getId() + "|" + this.getPersona().getNombre() + "|" + this.getPersona().getNifnie().mostrar()
-				+ "|" + this.getPersona().getFechaNac() + "|" + this.getPersona().getTelefono() + "|" + this.getId()
-				+ "|" + this.getTelefono() + "|" + this.getDireccion();
-		return ret;
-	}
-
-	/**
-	 * Metodo el cual exporta un objeto del tipo Manager Completo, guardandolo en un
-	 * archivo llamado "manager.txt" de forma ordenada por linea
-	 * 
-	 * @author Facundo
-	 */
-	public void exportarManager() {
-		System.out.println("Guardando datos en Manager.txt...");
-
-		File fOut = null;
-		FileWriter fw = null;
-		BufferedWriter bw = null;
-
-		try {
-			bw = new BufferedWriter(fw = new FileWriter(fOut = new File("managers.txt")));
-			for (int i = 0; i < Datos.MANAGERS.length; i++) {
-				Manager m = new Manager();
-				m = Datos.MANAGERS[i];
-				bw.write(m.data() + "\n");
-			}
-
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		} finally {
-			try {
-				if (bw != null)
-					bw.close();
-				if (fw != null)
-					fw.close();
-
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
 	/***
 	 * Función que devuelve una cadena de caracteres con los datos del mánager en el
 	 * siguiente formato: <idManager> <nombre> ” (” <documentacion> ”) del año ”
@@ -177,4 +132,116 @@ public class Manager {
 				+ persona.getFechaNac().getYear() + " Tfno1: " + telefono + " , Tfno2:" + persona.getTelefono() + "]";
 	}
 
+	//// Examen 6 Ejercicio 3
+	/**
+	 * Función que devuelve una cadena de caracteres con la siguiente estructura
+	 * <DatosPersona.id>|<DatosPersona.nombre>|<DatosPersona.documentacion>|<DatosPersona.fec
+	 * haNac>|<DatosPersona.telefono>|<Manager.id>|<Manager.telefono>|<Manager.direccion>
+	 * Cada campo se separa mediante el caracter '|'
+	 * 
+	 * @return
+	 */
+	public String data() {
+		return "" + persona.getId() + "|" + persona.getNombre() + "|" + persona.getNifnie().mostrar() + "|"
+				+ persona.getFechaNac().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "|" + persona.getTelefono()
+				+ "|" + this.id + "|" + this.telefono + "|" + this.direccion;
+	}
+
+	/***
+	 * Función para exportar los datos de cada uno de los mánagers de una colección
+	 * que se le pasa como parámetro, a través del método data() anterior, separando
+	 * la información de cada mánager en una línea distinta.
+	 * 
+	 * @param managers la coleccion de managers a exportar
+	 */
+	private static void exportar(Manager[] managers) {
+		String path = "managers.txt";
+		File fichero = new File(path);
+		FileWriter escritor = null;
+		PrintWriter buffer = null;
+		try {
+			try {
+				escritor = new FileWriter(fichero, false);
+				buffer = new PrintWriter(escritor);
+				for (Manager m : managers) {
+					buffer.println(m.data());
+				}
+			} finally {
+				if (buffer != null) {
+					buffer.close();
+				}
+				if (escritor != null) {
+					escritor.close();
+				}
+			}
+		} catch (FileNotFoundException e) {
+			System.out.println("Se ha producido una FileNotFoundException" + e.getMessage());
+		} catch (IOException e) {
+			System.out.println("Se ha producido una IOException" + e.getMessage());
+		} catch (Exception e) {
+			System.out.println("Se ha producido una Exception" + e.getMessage());
+		}
+	}
+
+	/**
+	 * @author Facundo
+	 */
+	private static void importarManagers() {
+		File f = null;
+		FileReader fr = null;
+		BufferedReader br = null;
+		try {
+			br = new BufferedReader(fr = new FileReader(f = new File("managers.txt")));
+			String linea;
+			
+			while ((linea = br.readLine()) != null) {
+				String[] Manager = linea.split("|");
+				long idPersona = Long.valueOf(Manager[0]);
+				String nombrePersona = Manager[1];
+				// String docPersona = Manager[2];
+				LocalDate nacPersona = LocalDate.parse(Manager[3]);
+				String telPersona = Manager[4];
+				long idManager = Long.valueOf(Manager[5]);
+				String telManager = Manager[6];
+				String direccionManager = Manager[7];
+
+				DatosPersona p = new DatosPersona(idPersona, nombrePersona, telPersona, nacPersona);
+				Manager m = new Manager(idManager, telManager, direccionManager, p);
+				Equipo[] e = Datos.EQUIPOS;
+
+				for (int i = 0; i < Datos.EQUIPOS.length; i++) {
+					if (m.getId() == e[i].getManager().getId()) {
+						String textoLargo = ("D./Dña" + p.getNombre() + " con NIF:NIE" + p.getNifnie() + "nacido el "
+								+ p.getFechaNac() + " representa al equipo" + e[i].getNombre() + "de id" + e[i].getId()
+								+ "durante el año" + e[i].getAnioinscripcion()
+								+ "el cual esta conformado por los siguientes atletas:");
+
+						System.out.println(textoLargo);
+
+						System.out.println(e[i].getAtletas()[i].toString());
+					} else {
+						System.out.println("El manager" + m.getPersona().getNombre() + "de id" + m.getId()
+								+ "no representa a ningun equipo.");
+
+					}
+				}
+			}
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (br != null)
+					br.close();
+				if (fr != null)
+					fr.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }

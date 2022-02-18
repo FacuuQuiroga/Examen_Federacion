@@ -1,5 +1,6 @@
 package entidades;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
@@ -7,7 +8,9 @@ import java.util.Scanner;
 import utils.Utilidades;
 import validaciones.Validaciones;
 
-public class DatosPersona {
+public class DatosPersona implements Serializable {
+	
+	private static final long serialVersionUID = 2L;
 	private long id;
 	private String nombre;
 	private String telefono;
