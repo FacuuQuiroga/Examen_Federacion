@@ -1,14 +1,10 @@
 package entidades;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -16,8 +12,7 @@ import java.util.Scanner;
 import utils.Datos;
 import validaciones.Validaciones;
 
-public class Manager implements Serializable{
-	private static final long serialVersionUID = 1L;
+public class Manager {
 	private long id;
 	private String telefono;
 	private String direccion;
@@ -180,68 +175,6 @@ public class Manager implements Serializable{
 			System.out.println("Se ha producido una IOException" + e.getMessage());
 		} catch (Exception e) {
 			System.out.println("Se ha producido una Exception" + e.getMessage());
-		}
-	}
-
-	/**
-	 * @author Facundo
-	 */
-	private static void importarManagers() {
-		File f = null;
-		FileReader fr = null;
-		BufferedReader br = null;
-		try {
-			br = new BufferedReader(fr = new FileReader(f = new File("managers.txt")));
-			String linea;
-			
-			while ((linea = br.readLine()) != null) {
-				String[] Manager = linea.split("|");
-				long idPersona = Long.valueOf(Manager[0]);
-				String nombrePersona = Manager[1];
-				// String docPersona = Manager[2];
-				LocalDate nacPersona = LocalDate.parse(Manager[3]);
-				String telPersona = Manager[4];
-				long idManager = Long.valueOf(Manager[5]);
-				String telManager = Manager[6];
-				String direccionManager = Manager[7];
-
-				DatosPersona p = new DatosPersona(idPersona, nombrePersona, telPersona, nacPersona);
-				Manager m = new Manager(idManager, telManager, direccionManager, p);
-				Equipo[] e = Datos.EQUIPOS;
-
-				for (int i = 0; i < Datos.EQUIPOS.length; i++) {
-					if (m.getId() == e[i].getManager().getId()) {
-						String textoLargo = ("D./Dña" + p.getNombre() + " con NIF:NIE" + p.getNifnie() + "nacido el "
-								+ p.getFechaNac() + " representa al equipo" + e[i].getNombre() + "de id" + e[i].getId()
-								+ "durante el año" + e[i].getAnioinscripcion()
-								+ "el cual esta conformado por los siguientes atletas:");
-
-						System.out.println(textoLargo);
-
-						System.out.println(e[i].getAtletas()[i].toString());
-					} else {
-						System.out.println("El manager" + m.getPersona().getNombre() + "de id" + m.getId()
-								+ "no representa a ningun equipo.");
-
-					}
-				}
-			}
-
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (br != null)
-					br.close();
-				if (fr != null)
-					fr.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 }

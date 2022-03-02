@@ -107,5 +107,6 @@ public class Oro extends Metal {
 		ret = new Oro(id, pureza, fecha);
 		return ret;
 	}
-
+	
+	
 }
